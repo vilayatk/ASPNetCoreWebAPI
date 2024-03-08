@@ -25,7 +25,10 @@ namespace MyFirstAPI.Controllers
         [HttpGet, Route("api/Products/{id}")] // OR  Route("{id}") OR [HttpGet("{id}")]
         public ActionResult GetProduct(int id) // id is passed from {id} parameter from the Route
         {
-            return Ok(_context.Products.Find(id)); // Status Code 200 OK with a Product
+            var product = _context.Products.Find(id);
+            return product is null ? NotFound("Product with id: " + id + " does not exist") : Ok(product);
+            // Not found : 204 Proper error handling
+            // Ok : Return product with Product
         }
     }
 }
