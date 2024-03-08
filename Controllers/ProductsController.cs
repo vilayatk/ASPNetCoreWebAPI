@@ -17,9 +17,9 @@ namespace MyFirstAPI.Controllers
             _context.Database.EnsureCreated();
         }
         [HttpGet]
-        public IEnumerable<Product> GetAllProducts()
+        public ActionResult GetAllProducts()
         {
-            return _context.Products.ToArray();
+            return Ok(_context.Products.ToArray()); // Status Code 200 OK
         }
     }
 }
