@@ -103,5 +103,42 @@ namespace MyFirstAPI.Controllers
 
             return Ok(product); // Majority of APIs follow that we should return deleted entity
         }
+
+        [HttpDelete("Delete")]
+        public async Task<ActionResult<Product>> DeleteMultiple([FromQuery] int[] ids)
+        // The name of the parameter is VERY IMPORTANT!!!
+        // api/Products/delete?ids=1&ids=3&ids=6 --> works! Length =3
+        // api/Products/delete?id=1&id=3&id=6 --> FAILS! Length = 0, because para name is different
+        {
+            if (ids.Length == 0)
+            {
+                return BadRequest("Ids missing. Deletion failed!");
+            }
+
+            var products = new List<Product>();
+
+            foreach (int id in ids)
+            {
+                var product = await _context.Products.FindAsync(id);
+
+                if (product is null)
+                {
+                    return NotFound("Product with id: " +  id + " does not exist. Nothing is deleted");
+                }
+
+                products.Add(product);
+            }
+
+            try
+            {
+                _context.Products.RemoveRange(products);
+                await _context.SaveChangesAsync();
+            }
+            catch(DBConcurrencyException)
+            {
+                throw;
+            }
+            return Ok("Deletion Successful");
+        }
     }
 }
