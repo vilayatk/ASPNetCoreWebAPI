@@ -22,13 +22,23 @@ namespace MyFirstAPI.Controllers
             return Ok(_context.Products.ToArray()); // Status Code 200 OK
         }
 
+        //[HttpGet, Route("api/Products/{id}")] // OR  Route("{id}") OR [HttpGet("{id}")]
+        //public ActionResult GetProduct(int id) // id is passed from {id} parameter from the Route
+        //{
+        //    var product = _context.Products.Find(id);
+        //    return product is null ? NotFound("Product with id: " + id + " does not exist") : Ok(product);
+        //    // Not found : 404 Proper error handling
+        //    // Ok : Return product with Product
+        //}
+
         [HttpGet, Route("api/Products/{id}")] // OR  Route("{id}") OR [HttpGet("{id}")]
-        public ActionResult GetProduct(int id) // id is passed from {id} parameter from the Route
+        public async Task<ActionResult> GetProduct(int id) // id is passed from {id} parameter from the Route
         {
-            var product = _context.Products.Find(id);
+            var product = await _context.Products.FindAsync(id);
             return product is null ? NotFound("Product with id: " + id + " does not exist") : Ok(product);
-            // Not found : 204 Proper error handling
+            // Not found : 404 Proper error handling
             // Ok : Return product with Product
         }
+
     }
 }
