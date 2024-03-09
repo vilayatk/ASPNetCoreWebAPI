@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MyFirstAPI.Models
 {
@@ -10,9 +11,10 @@ namespace MyFirstAPI.Models
         public string Description { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public bool IsAvailable { get; set; }
+        [Required]
         public int CategoryId { get; set; }
         [JsonIgnore]
-        public virtual Category Category { get; set; }
+        public virtual Category? Category { get; set; }
 
     }
 }
