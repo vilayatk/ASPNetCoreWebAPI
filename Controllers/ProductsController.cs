@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyFirstAPI.Models;
+using System.Data;
 
 namespace MyFirstAPI.Controllers
 {
@@ -36,7 +37,7 @@ namespace MyFirstAPI.Controllers
         //    // Ok : Return product with Product
         //}
 
-        [HttpGet, Route("api/Products/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult> GetProduct(int id)
         {
             var product = await _context.Products.FindAsync(id);
@@ -48,12 +49,36 @@ namespace MyFirstAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product) // Interface to return Custom Action Results
         {
-            if (!ModelState.IsValid) return BadRequest("Invalid data!"); // 400 Bad Request Custom Error Handling
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
             // Status 201 Created! // We call the GetProduct Method to return the product by id
             return CreatedAtAction("GetProduct",
                 new { id = product.Id }, product);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Product>> PutProduct(int id, [FromBody] Product product)
+        {
+            if (id != product.Id)
+            {
+                return BadRequest("Id does not match product id");
+            }
+            if (!_context.Products.Any(p => p.Id == id))
+            {
+                return NotFound("Product does not exist. Update failed!");
+            }
+
+            try
+            {
+                _context.Entry(product).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            catch (DBConcurrencyException) // Someone else has modified or deleted the product at the same time
+            {
+                throw;
+            }
+
+            return NoContent();
         }
     }
 }
