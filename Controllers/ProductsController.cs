@@ -80,5 +80,28 @@ namespace MyFirstAPI.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Product>> DeleteProduct(int id)
+        {
+            var product = await _context.Products.FindAsync(id);
+
+            if (product is null)
+            {
+                return NotFound("Product does not exist. Delete failed!");
+            }
+
+            try
+            {
+                _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
+            }
+            catch (DBConcurrencyException) // Someone else has modified or deleted the product at the same time
+            {
+                throw;
+            }
+
+            return Ok(product); // Majority of APIs follow that we should return deleted entity
+        }
     }
 }
