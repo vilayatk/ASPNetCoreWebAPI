@@ -48,6 +48,7 @@ namespace MyFirstAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product) // Interface to return Custom Action Results
         {
+            if (!ModelState.IsValid) return BadRequest("Invalid data!"); // 400 Bad Request Custom Error Handling
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
             // Status 201 Created! // We call the GetProduct Method to return the product by id

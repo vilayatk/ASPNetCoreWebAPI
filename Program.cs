@@ -5,7 +5,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true; 
+        // ApiController will not validate required fields on its own
+        // We need to handle the ModelsTate invalid behaviour in our endpoints
+        // We need Custom Error Handling like if (!ModelStateValid) return BadRequest()
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
